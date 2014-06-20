@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ReactiveCocoa.h"
 
 @interface SYNCRACAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
+@property (strong, nonatomic) RACScheduler *deviceScheduler;
 @end
