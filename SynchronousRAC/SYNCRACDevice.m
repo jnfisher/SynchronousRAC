@@ -9,7 +9,21 @@
 #import "SYNCRACDevice.h"
 #import "SYNCRACAppDelegate.h"
 
+@interface  SYNCRACDevice()
++ (RACScheduler *) deviceScheduler;
+@end
+
 @implementation SYNCRACDevice
++ (RACScheduler *) deviceScheduler {
+    static RACScheduler *_deviceScheduler=nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&oncePredicate, ^{
+       _deviceScheduler = [RACScheduler schedulerWithPriority:RACSchedulerPriorityDefault];
+    });
+
+    return _deviceScheduler;
+}
+
 - (void) delayWithName:(NSString *)name {
     // Do something that takes some time
     NSTimeInterval delay = arc4random_uniform(2) + arc4random_uniform(5) / 5.0;
@@ -18,8 +32,7 @@
 }
 
 - (RACSignal *)doSomethingAndTimeout:(BOOL)shouldTimeout orError:(BOOL)shouldError name:(NSString *)name {
-    SYNCRACAppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-    return [RACSignal startEagerlyWithScheduler:appDelegate.deviceScheduler block:^(id <RACSubscriber> subscriber) {
+    return [RACSignal startEagerlyWithScheduler:[SYNCRACDevice deviceScheduler] block:^(id <RACSubscriber> subscriber) {
         [self delayWithName:name];
         
         if (shouldTimeout) {
@@ -39,8 +52,7 @@
 }
 
 - (RACSignal *)doSomethingAndTimeout:(BOOL)shouldTimeout orError:(BOOL)shouldError name:(NSString *)name andSendNextObject:(id)object {
-    SYNCRACAppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-    return [RACSignal startEagerlyWithScheduler:appDelegate.deviceScheduler block:^(id <RACSubscriber> subscriber) {
+    return [RACSignal startEagerlyWithScheduler:[SYNCRACDevice deviceScheduler] block:^(id <RACSubscriber> subscriber) {
         [self delayWithName:name];
         
         if (shouldTimeout) {
