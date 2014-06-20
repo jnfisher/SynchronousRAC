@@ -23,7 +23,9 @@
     
     NSOperationQueue *queue = [NSOperationQueue new];
     queue.maxConcurrentOperationCount = 1;
-    
+
+    [operation4 addDependency:operation1];
+
     [queue addOperation:operation4];
     [queue addOperation:operation5];
     [queue addOperation:operation2];
@@ -130,7 +132,7 @@
     NSString *nextData = @"$$magical data$$";
     [[[[[device doSomethingAndTimeout:NO orError:NO name:@"Step One" andSendNextObject:nextData] flattenMap:^RACStream *(id value) {
         NSLog(@"received some data: %@", value);
-        return [device doSomethingAndTimeout:YES orError:NO name:@"Step Two"];
+        return [device doSomethingAndTimeout:NO orError:NO name:@"Step Two"];
     }] flattenMap:^RACStream *(id value) {
         return [device doSomethingAndTimeout:NO orError:NO name:@"Step Three"];
     }]
